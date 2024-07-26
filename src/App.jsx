@@ -30,11 +30,7 @@ function App() {
       if (!prevPickedPlaces) {
         prevPickedPlaces = [];
       }
-      if (
-        prevPickedPlaces.some(
-          (place) => place.id === selectedPlace.id
-        )
-      ) {
+      if (prevPickedPlaces.some((place) => place.id === selectedPlace.id)) {
         return prevPickedPlaces;
       }
       return [selectedPlace, ...prevPickedPlaces];
@@ -58,9 +54,22 @@ function App() {
         )
       );
 
+      try {
+        await updateUserPlaces(
+          userPlaces.filter(
+            (place) => place.id !== selectedPlace.current.id
+          )
+        );
+      } catch (error) {
+        setUserPlaces(userPlaces);
+        setErrorUpdatingPlaces({
+          message: error.message || 'Failed to delete place.',
+        });
+      }
+
       setModalIsOpen(false);
     },
-    []
+    [userPlaces]
   );
 
   function handleError() {
@@ -89,8 +98,8 @@ function App() {
         <img src={logoImg} alt="Stylized globe" />
         <h1>PlacePicker</h1>
         <p>
-          Create your personal collection of places you would like to
-          visit or you have visited.
+          Create your personal collection of places you would like to visit
+          or you have visited.
         </p>
       </header>
       <main>
